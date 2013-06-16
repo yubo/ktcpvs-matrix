@@ -1,5 +1,4 @@
 # ktcpvs-matrix 简介
-===============
 
 Stands for Kernel TCP Virtual Server, 在[KTCPVS][]基础上开发，可以在 hosts-apps两个维度上设置权值
 
@@ -12,14 +11,12 @@ Stands for Kernel TCP Virtual Server, 在[KTCPVS][]基础上开发，可以在 h
   * userspace/     用户工具
 
 ## 相关文章
-===============
 
   * Xuanhua Shi, Hongbo Jiang, Ligang He, Hai Jin, Chonggang Wang, Bo Yu, Xueguang Chen, "[Developing an Optimized Application Hosting Framework in Clouds][apphosting-jcss]", Journal of Computer and System Sciences, DOI: 10.1016/j.jcss.2013.02.003, 2013
 
   * Xuanhua Shi, Hongbo Jiang, Ligang He, Hai Jin, Chonggang Wang, Bo Yu, Fei Wang, "[EAPAC: An Enhanced Application Placement Framework for Data Centers][EAPAC-CSE]", The 14th IEEE International Conference on Computational Science and Engineering, 2011
 
 ## 资源
-===============
 
 * [KTCPVS][]
 * [EAPAC-CSE][]
