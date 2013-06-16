@@ -1,0 +1,15 @@
+
+I have tested it under CentOS 4.x, support for newer kernel will be added later. Before begin please make sure the kernel-devel package is installed.
+Then check out the source code for 2.6 from the subversion: 
+ svn co http://svn.linuxvirtualserver.org/repos/ktcpvs/branches/stable_for_2.6.9/ ktcpvs 
+Complie & install ktcpvs: 
+ cd ktcpvs && make install 
+And now, you can use the start script under the ktcpvs directory to start the kernel thread ;) 
+ ./start 
+You can change the config file as your need, then use "tcpvsadm -f config" to load it, for more details, please refer the manual of tcpvsadm.The default configuration file is /etc/ktcpvs.conf, you can change the default settings in it . 
+
+FEEDBACK
+--------
+If you have any questions about this port, please send email to me, thanks,
+
+Wenming Zhang <zhgwenming@gmail.com>

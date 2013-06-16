@@ -1,0 +1,230 @@
+.\"
+.\"     tcpvsadm(8) manual page
+.\"
+.\"	$Id: tcpvsadm.8,v 1.2.2.3 2004/12/08 14:06:31 wensong Exp $
+.\"
+.\"     Authors: Wensong Zhang <wensong@linux-vs.org>
+.\"
+.\"     Changes:
+.\"
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 2 of the License, or
+.\"     (at your option) any later version.
+.\"
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
+.\"
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program; if not, write to the Free Software
+.\"     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\"
+.TH TCPVSADM 8 "31 October 2004" "LVS Administration" "Linux Administrator's Guide"
+.UC 4
+.SH NAME
+tcpvsadm \- Kernel TCP Virtual Server administration
+.SH SYNOPSIS
+.B tcpvsadm -A|E -i \fIident\fP [-s \fIscheduler\fP] [-P \fIport\fP]
+.br
+.B tcpvsadm -D -i \fIident\fP
+.br
+.B tcpvsadm -F
+.br
+.B tcpvsadm -a|e -i \fIident\fP -r \fIserver-address\fP [-w \fIweight\fP]
+.br
+.B tcpvsadm -d -i \fIident\fP -r \fIserver-address\fP
+.br
+.B tcpvsadm --add-rule -i \fIident\fP -p \fIpattern\fP -r \fIserver-address\fP [-m \fImatchnum\fP]
+.br
+.B tcpvsadm --del-rule -i \fIident\fP -p \fIpattern\fP -r \fIserver-address\fP
+.br
+.B tcpvsadm -L [options]
+.br
+.B tcpvsadm -f \fIconfig-file\fP
+.br
+.B tcpvsadm --start|stop [-i \fIident\fP]
+.br
+.B tcpvsadm -h
+.SH DESCRIPTION
+\fBTcpvsadm\fR is used to set up, maintain or inspect the TCP Virtual
+Server table inside the Linux kernel (KTCPVS). KTCPVS is a Layer-7
+switching software in the Linux Virtual Server framework, and can do
+application-level load balancing (such as content-based scheduling)
+inside the Linux kernel. The reason of implementing it inside the
+kernel is to avoid the overhead of context switching and memory
+copying between user-space and kernel-space. Although the scalability
+of KTCPVS is lower than that of IPVS (IP Virtual Server), it is
+flexible, because the content of request is known before the request
+is redirected to real server.
+.SS COMMANDS
+\fBtcpvsadm\fR(8) recognises the commands described below.
+.TP
+.B -A, --add-service
+Add a TCP virtual service.
+.TP
+.B -E, --edit-service
+Edit a TCP virtual service.
+.TP
+.B -D, --delete-service
+Delete a TCP virtual service, along with any associated real servers
+and rules.
+.TP
+.B -F, --flush
+Flush the TCP virtual server table.
+.TP
+.B -a, --add-server
+Add a real server to a TCP virtual service.
+.TP
+.B -e, --edit-server
+Edit a real server in a TCP virtual service.
+.TP
+.B -d, --delete-server
+Remove a real server from a TCP virtual service.
+.TP
+.B --add-rule
+Add a content-based scheduling rule to a TCP virtual
+service. Currently, the rule is simple, if a request content matchs a
+\fIpattern\fP, then the request will be redirected to the specified
+server.
+.TP
+.B --del-rule
+Remove a content-based scheduling rule from a TCP virtual service.
+.TP
+.B -L, --list
+List the TCP virtual server table if no argument is specified. If a
+service \fIident\fP is selected, list this service only. The exact
+output is affected by the other arguments given.
+.TP
+.B -f --load-configfile \fIconfig-file\fP
+Load the TCP virtual server table from the specified
+\fIconfig-file\fP.  The original table will be flushed before loading
+from the \fIconfig-file\fP.
+.TP
+.B --start [-i \fIident\fP]
+Start all the services in the TCP virtual server table if no argument
+is specified. If a service \fIident\fP is selected, start this service
+only.
+.TP
+.B --stop [-i \fIident\fP]
+Stop all the services in the TCP virtual server table if no argument
+is specified. If a service \fIident\fP is selected, stop this service
+only.
+.TP
+.B -h, --help
+Display a description of the command syntax.
+.SS PARAMETERS
+The commands above accept or require zero or more of the following
+parameters.
+.TP
+.B -i, --ident \fIident\fP
+The \fIident\fP is a string of alphabetic and numeric characters, to
+identify the name of a TCP virtual service.
+.TP
+.B -s, --scheduler \fIscheduling-method\fP
+The \fIscheduling-method\fP is an algorithm for allocating TCP
+connections to real servers. The scheduling algorithms are implemented
+as kernel modules. Two are shipped with KTCPVS now:
+.sp
+\fBwlc\fR - Weighted Least-Connection: assign more jobs to servers
+with fewer jobs and relative to the real servers' weight.
+.sp
+\fBhttp\fR - HTTP content-based scheduling: assign jobs to servers
+according to the specified content-based scheduling rules.
+.sp
+\fBhhttp\fR - Hash-based HTTP scheduling: assign jobs to servers
+according to the specified content-based scheduling rules where
+regular expression matches are hashed and the virtual server is
+selected based on the resulting hash value.
+.sp
+\fBNote:\fR If a scheduling module cannot be automatically loaded by
+modprobe(8), the module may be manually inserted into the kernel using
+insmod(8).
+.TP
+.B -l, --listen \fIserver-address[:port]\fP
+Specify the ip address (and port number) that a TCP virtual service
+listens to.  The \fIserver-address\fP is the \fIhost\fP address of a
+real server, and possibly plus \fIport\fP. \fIHost\fP can be either a
+plain IP address or a hostname. \fIPort\fP can be either a plain port
+number or the service name of port.
+.TP
+.B -P, --port \fIport\fP
+Specify the port number that a TCP virtual service listens to.
+.TP
+.B -r, --real-server \fIserver-address\fP
+Real server that an associated request for service may be assigned to.
+The \fIserver-address\fP is the \fIhost\fP address of a real server,
+and may plus \fIport\fP. \fIHost\fP can be either a plain IP address
+or a hostname. \fIPort\fP can be either a plain port number or the
+service name of port. \fIport\fP may be ommitted, in which case  the
+destination port on the real server will be the destination port of
+the request sent to the virtual service.
+.TP
+.B -w, --weight \fIweight\fP
+\fIWeight\fP is an integer specifying the capacity  of a server
+relative to the others in the pool. The valid values of \fIweight\fP
+are 0 through to 65535. The default is 1. Quiescent servers are
+specified with a weight of zero. A quiescent server will receive no
+new jobs but still serve the existing jobs, for all scheduling
+algorithms distributed with the Linux Virtual Server. Setting a
+quiescent server may be useful if the server is overloaded or needs to
+be taken out of service for maintenance.
+.TP
+.B -p, --pattern \fIpattern\fP
+\fIPattern\fP is a string specifying a matching pattern, and it is
+interpreted as an extended regular expression. The pattern ".*" or
+"^/.*" is used to specify the default server. When no other server
+pattern is matched, the default server will be used.
+.TP
+.B -n, --numeric
+Numeric output.  IP addresses and port numbers will be printed in
+numeric format rather than as as host names and services respectively,
+which is the  default.
+.SH EXAMPLES
+The following commands configure a TCP virtual service to distribute
+incoming requests addressed to port 80 at local address to three web
+servers, according the content-based scheduling rules.
+.PP
+.nf
+tcpvsadm -A -i web -s http -P 80
+tcpvsadm -a -i web -r 192.168.10.1:80
+tcpvsadm -a -i web -r 192.168.10.2:80
+tcpvsadm -a -i web -r 192.168.10.3:80
+tcpvsadm --add-rule -i web --pattern=^/cgi-bin/ -r 192.168.10.1:80
+tcpvsadm --add-rule -i web --pattern=^/images/ -r 192.168.10.2:80
+tcpvsadm --add-rule -i web --pattern=.* -r 192.168.10.3:80
+.fi
+.PP
+Alternatively, this could be achieved by "tcpvsadm -f config-file",
+the config file is as follows:
+.PP
+.nf
+virtual web {
+    listen = 0.0.0.0:80
+    scheduler = http
+    startservers = 8
+    maxclients = 256
+    minspareservers = 6
+    maxspareservers = 18
+    server = 192.168.10.3:80 1
+    server = 192.168.10.2:80 1
+    server = 192.168.10.1:80 1
+    rule = pattern "^/cgi-bin/"  use server 192.168.10.1:80
+    rule = pattern "^/images/"  use server 192.168.10.2:80
+    rule = pattern ".*"  use server 192.168.10.3:80
+}
+.fi
+.SH NOTES
+
+.SH FILES
+.I /proc/sys/net/ktcpvs/max_backlog
+.br
+.I /proc/sys/net/ktcpvs/unload
+.SH SEE ALSO
+\fBipvsadm\fP(8), \fBinsmod\fP(8), \fBmodprobe\fP(8)
+.SH AUTHORS
+.nf
+Wensong Zhang <wensong@linuxvirtualserver.org>
+.fi

@@ -1,0 +1,13 @@
+
+KTCPVS TODO list
+
+* Support persistent HTTP connections (more tuning needed)
+
+* A fast HTTP request/response parsing engine
+
+* Logging?
+
+* More scheduling modules (such cookie-based scheduling)
+
+* Add multi-thread event-driven architecture
+

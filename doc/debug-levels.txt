@@ -1,0 +1,10 @@
+
+level 0		Announement and transmission error messages
+level 1		Non-fatal error messages
+level 2		Configuration
+level 3		Daemon, socket listening
+level 4		Connection new/expire & lookup
+level 5		Connection handling, Scheduling
+level 8		State transition
+level 12	Socket data relay
+

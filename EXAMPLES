@@ -1,0 +1,56 @@
+
+Using the http scheduler
+-------------------------
+
+The http scheduler is to assign jobs to servers according to the
+specified content-based scheduling rules.
+
+In the example, there are three web servers, web1, web2 and web3. web1
+is used for serving images, web2 is for static pages, web3 is for the
+rest. The tcpvsadm commands of this example are as follows:
+
+    tcpvsadm -A -i http -s http
+    tcpvsadm -a -i http -r web1:80
+    tcpvsadm -a -i http -r web2:80
+    tcpvsadm -a -i http -r web3:80
+    tcpvsadm --add-rule -i http --pattern=/images/.* -r web1:80
+    tcpvsadm --add-rule -i http --pattern=/html/.* -r web2:80
+    tcpvsadm --add-rule -i http --pattern=.* -r web3:80
+
+
+Using the hhttp scheduler
+-------------------------
+
+The hhttp scheduler is to assign jobs to servers according  to the
+specified content-based scheduling rules where regular expression
+matches are hashed and the virtual server is selected based on the
+resulting hash value.
+
+In the example, ktcpvs is used to forward requests to different users
+web pages /users/<username>/.* to different web servers, in which
+server is selected based on the hash value of username. The tcpvsadm
+commands are as follows:
+    tcpvsadm -A -i web -s hhttp
+    tcpvsadm -a -i web -r 192.168.0.10:80
+    tcpvsadm -a -i web -r 192.168.0.11:80
+    tcpvsadm -a -i web -r 192.168.0.12:80
+
+    tcpvsadm --add-rule -i web --pattern="/users/([^/]+)/.*" -m 1 -r 192.168.0.10:80
+    tcpvsadm --add-rule -i web --pattern="/users/([^/]+)/.*" -m 1 -r 192.168.0.11:80
+    tcpvsadm --add-rule -i web --pattern="/users/([^/]+)/.*" -m 1 -r 192.168.0.12:80
+
+The configuration file is as follows:
+Virtual web {
+    listen = 0.0.0.0:webcache
+    scheduler = hhttp
+    startservers = 8
+    maxclients = 256
+    minspareservers = 6
+    maxspareservers = 18
+    server = 192.168.0.12:www 1
+    server = 192.168.0.11:www 1
+    server = 192.168.0.10:www 1
+    rule = pattern "/users/([^/]+)/.*" match 1 use server 192.168.0.12:www
+    rule = pattern "/users/([^/]+)/.*" match 1 use server 192.168.0.11:www
+    rule = pattern "/users/([^/]+)/.*" match 1 use server 192.168.0.10:www
+}

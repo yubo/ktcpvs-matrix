@@ -1,0 +1,72 @@
+#!/bin/bash
+# 
+#	ktcpvs: Shell script used to start ktcpvs module automatically
+#			Author: Zhang Wenming<Wenming.zhang@unison.net.cn>
+#
+# chkconfig: 2345  56 24
+# description:  Ktcpvs start script
+#
+
+CONF=/etc/ktcpvs.conf
+
+[ -f $CONF ] || exit 1
+# source function library
+. /etc/rc.d/init.d/functions
+MODULES="tvs_phttp tvs_chttp tvs_hhttp"
+
+function start()
+{
+	grep -q phttp $CONF && modprobe tvs_phttp
+	grep -q chttp $CONF && modprobe tvs_chttp
+	grep -q hhttp $CONF && modprobe tvs_hhttp
+	echo -n "Staring ktcpvs:"
+	tcpvsadm -f $CONF 
+	initlog -c "tcpvsadm --start " && success || failure
+	echo
+}
+
+function stop()
+{
+	if [ ! -d /proc/sys/net/ktcpvs ]; then
+		echo "Ktcpvs not started." 
+		exit 1
+	fi
+	echo -n "Stoping ktcpvs:"
+	initlog -c "tcpvsadm --stop" && success || failure
+	echo 
+}
+function unload()
+{
+	if [ ! -d /proc/sys/net/ktcpvs ]; then
+		echo "Ktcpvs not started." 
+		exit 1
+	fi
+	echo "Removing ktcpvs schedulers ..."
+	echo 1 >/proc/sys/net/ktcpvs/unload
+	sleep 3
+	for i in $MODULES; do
+		if grep -q $i /proc/modules; then
+			echo -n "Removing module $i:"
+			initlog -c "modprobe -r $i" && success || failure
+			echo
+		fi
+	done
+	echo -n "Unloading ktcpvs module:"
+	initlog -c 'modprobe -r ktcpvs' && success || failure
+	echo
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	unload)
+		stop
+		unload
+		;;
+	*)
+		echo $"Usage: $0 {start|stop|unload}"
+esac

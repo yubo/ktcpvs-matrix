@@ -1,0 +1,23 @@
+Virtual web1 {
+    listen = 0.0.0.0:webcache
+    scheduler = chttp
+    startservers = 8
+    maxclients = 256
+    minspareservers = 6
+    maxspareservers = 18
+    redirect = localhost:80
+    server = localhost:www 100
+    rule = pattern ".*" use server localhost:www
+}
+
+Virtual web2 {
+    listen = 127.0.0.1:8000
+    scheduler = hhttp
+    startservers = 8
+    maxclients = 256
+    minspareservers = 6
+    maxspareservers = 18
+    server = 127.0.0.1:www 100
+    rule = pattern "/users/([^/]+)/.*" match 1 use server 127.0.0.1:www
+}
+

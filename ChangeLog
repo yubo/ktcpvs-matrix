@@ -1,0 +1,476 @@
+Kernel TCP Virtual Server - Version 0.0.18 - December 18, 2004
+
+2004-12-14  Alexandre Cassen  <acassen@linux-vs.org>
+
+	* tcp_vs.c (tcp_vs_relay_socket): fixed a lock issue at inbound
+	while performing socket relay.  This issue only appear on SMP box.
+
+
+Kernel TCP Virtual Server - Version 0.0.17 - December 08, 2004
+
+2004-12-07  Alexandre Cassen  <acassen@linux-vs.org>
+
+	* Added timeout support to connection handler.
+	  Added new sysctl var 'read_timeout' to set this new stuff. The
+	  default value is 180 seconds. This new option provides stalled
+	  connections hunting.
+
+2004-11-30  Wensong Zhang  <wensong@linux-vs.org>
+
+	* userspace/tcpvsadm.c (main): fixed the bug of the --listen
+	option.
+
+
+Kernel TCP Virtual Server - Version 0.0.16 - October 31, 2004
+
+2004-10-31  Wensong Zhang  <wensong@linux-vs.org>
+
+	* integrate the hhttp scheduler patch from Philipp Klaus
+	<pklaus@futurelab.ch>, which is to send requests to server based
+	on the hash value of matched request.
+
+	* userspace/tcpvsadm.c: added the --listen option to specify the
+	ip address (and port number) that a TCP virtual service listens to.
+
+	* EXAMPLES: added.
+
+
+Kernel TCP Virtual Server - Version 0.0.15 - July 8, 2003
+
+2003-07-08  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_phttp.c: a little bit code tidy up.
+
+2003-06-15  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_http_trans.h: splitted from tcp_vs.h.
+
+	* tcp_vs_http_parser.h: splitted from tcp_vs.h.
+
+
+Kernel TCP Virtual Server - Version 0.0.14 - June 14, 2003
+
+2003-06-14  Wensong Zhang  <wensong@linux-vs.org>
+
+	* Merged the patch from Hai Long <david_lung@yahoo.com>
+
+	split the code for HTTP transport from tcp_vs_http_parser.c into
+	tcp_vs_http_trans.c.
+
+	Some tunings in the tcp_vs_chttp.c and tcp_vs_phttp.c.
+
+	* Some code tidy up.
+
+2003-06-07  Wensong Zhang  <wensong@linux-vs.org>
+
+	* Merged the patch from Hai Long <david_lung@yahoo.com>
+
+	A large part of the HTTP parsing engine has been rewritten.
+
+	some code tidy up in the tcp_vs_phttp.c and tcp_vs_chttp.c.
+
+2003-05-28  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_chttp.c: fixed the wrong way of calling spin_lock and
+	spin_unlock.
+
+
+Kernel TCP Virtual Server - Version 0.0.13 - May 28, 2003
+
+2003-05-28  Wensong Zhang  <wensong@linux-vs.org>
+
+	* Merged the minor patch from Hai Long <david_lung@yahoo.com> to
+	fix up the function strdup.
+
+2003-05-23  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_ctl.c (tcp_vs_edit_service, tcp_vs_add_service): fixed to
+	return -ENOENT when the scheduler is not found.
+
+	* Merged the patch from Hai Long <david_lung@yahoo.com>
+
+	Added a new scheduler ktcpvs_chttp to do cookie-injection load
+	balancing for web servers.
+
+	Split the code into a stand-alone HTTP parsing engine.
+
+	Included the AVL code from GNU libavl and adapted it to use inside
+	the kernel.
+
+2003-05-21  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_timer.c (tcp_vs_slowtimer_init): removed the buggy line of
+	assigning slowtimer_jiffies with the system jiffies.
+
+2003-04-27  Wensong Zhang  <wensong@linux-vs.org>
+
+	* some code tidy up.
+
+
+Kernel TCP Virtual Server - Version 0.0.12 - April 7, 2003
+
+2003-04-07  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_phttp.c (http_read_line): merged the patch from Hai Long
+	<david_lung@yahoo.com>, to remove the max_line_size limit in the
+	persistent http scheduler.
+
+2003-04-05  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_phttp.c (relay_multiparts): added the missing continue
+	statement, and changed the schedule_timeout(HZ) to schedule(),
+	because the thread only needs to wait for socket data.
+
+2003-02-27  Wensong Zhang  <wensong@linux-vs.org>
+
+	* userspace/tcpvsadm.c (modprobe_ktcpvs): added to load the ktcpvs
+	module automatically by modprobe.
+
+2003-02-25  Wensong Zhang  <wensong@linux-vs.org>
+
+	* userspace/Makefile (MANDIR): applied the patch from Alejandro
+	Mery Pellegrini <amery@innernet.cl> to add the $(MANDIR) variable,
+	so that it can be overloaded by the generic build-system of
+	rocklinux.
+
+	* Makefile (modules_install, modules_uninstall): added those
+	targets to install the modules into /lib/module/$(KERNELRELEASE)\
+	/net/ktcpvs/ directory.
+
+2003-02-24  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_phttp.c: applied the patch from Hai Long
+	(parse_http_request_line): changed the way to compare http version.
+	(parse_http_status_line): changed the way to compare http version.
+	(http_mime_parse): changed the architecture of parse mime header.
+	(http_get_response): comment out the call to http_line_unescape().
+
+	* tcp_vs_phttp.c (http_read_line, relay_http_data)
+	(relay_multiparts): replaced interruptible_sleep_on_timeout with
+	sleep on socket plus schedule_timeout(), so that the child can be
+	waken up immediately if there is data available.
+
+2003-02-23  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_srvconn.c (tcp_vs_srvconn_flush): fixed the bug of
+	forgetting to remove the srvconn entry from its list.
+
+
+Kernel TCP Virtual Server - Version 0.0.11 - February 22, 2003
+
+2003-02-22  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_sched.c (tcp_vs_scheduler_get): changed name of the
+	scheduing modules to the prefix "ktcpvs_*", instead of "tcp_vs_*".
+
+	* tcp_vs_phttp.c (data_available): added the checking if the
+	connection is closed and removed the socket peeking.
+
+	* tcp_vs_srvconn.c: changed to use the slow timer to collect stale
+	server connections, instead of using the system timer. Note that
+	do not use bottom half or softirq to handle socket directly, such
+	as closing a socket, it is fatal.
+
+	* tcp_vs_timer.c: added the slow timer for collecting stale
+	connections. The collection procedure is activated by the ktcpvs
+	main thread periodically.
+
+2003-02-20  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_ctl.c: added the sysctl variable
+	/proc/net/ktcpvs/keepalive_timeout to set the keepalive timeout
+	value.
+
+	* tcp_vs_phttp.c (tcp_vs_phttp_schedule): changed to use the new
+	server connection pool, so that the server connection pool can be
+	shared by different clients.
+
+	* tcp_vs_srvconn.c : added the implementation of server connection
+	pool.
+
+2003-02-15  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_phttp.c (tcp_vs_phttp_schedule): replaced the
+	interruptible_sleep_on_timeout call with sleep on socket plus
+	schedule_timeout() too.
+
+	* tcp_vs.c (tcp_vs_child): replaced interruptible_sleep_on_timeout
+	with sleep on socket plus schedule_timeout(), so that the child
+	can be waken up immediately if there is data available. It is more
+	efficient.
+
+
+Kernel TCP Virtual Server - Version 0.0.10 - February 14, 2003
+
+2003-02-14  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_phttp.c: merged Hai Long's persistent HTTP scheduling
+	extension into a separate scheduling module called "phttp". Thanks
+	must go to Hai Long <david_lung@yahoo.com> for making this
+	externsion.
+
+	(http_read_line): added the detection if the connection is closed,
+	which can avoid infinite loop.
+
+	(tcp_vs_phttp_schedule): changed to terminate the scheduling loop
+	if the service is down or the system is unloaded.
+
+	(tcp_vs_phttp_schedule): fixed the NULL pointer dereferencing in
+	releasing the server list.
+
+2003-01-07  Wensong Zhang  <wensong@linux-vs.org>
+
+	* userspace/tcpvsadm.c (usage_exit): fixed the help information.
+
+	* tcp_vs.c (tcp_vs_relay_socket, skb_send_datagram_socket): added
+	sanity checking of the result of tcp_vs_sendbuffer.
+
+2002-06-17  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs.c (tcp_vs_daemon): added the missing vfree(child_table)
+	when the daemon ends.
+
+
+Kernel TCP Virtual Server - Version 0.0.9 - May 26, 2002
+
+2002-05-26  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs.c (tcp_vs_relay_socket): two changes in the zero-copy
+	sending and non zero-copying respectively.
+
+	- In the zero-copying sending, added the code of destructing the
+	skb from the source sock and set its owner to the dest sock. It
+	seems that the sock parameters have been tuned correctly.
+
+	- Added the code of continue sending the left data, if the
+	skb_send_datagram_socket cannot send all the data as expected.
+
+	* tcp_vs.h, tcp_vs_http.c (tcp_vs_http_schedule), tcp_vs_wlc.c
+	(tcp_vs_wlc_schedule) and tcp_vs.c (tcp_vs_conn_handle): changed
+	return type of the schedule method in the struct tcp_vs_scheduler
+	from socket pointer to int, so that the return code can return
+	more error codes.
+
+	* tcp_vs.c (tcp_vs_child): changed to use NONBLOCK accept call.
+
+
+Kernel TCP Virtual Server - Version 0.0.8 - May 11, 2002
+
+2002-05-11  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs.c (tcp_vs_relay_socket): rewrote most code of this
+	function.
+
+	Added the experimental code of attaching the skb from the source
+	socket to the destination socket. Some tcp parameters still need
+	tuning. This function is controlled by
+	/proc/sys/net/ktcpvs/zerocopy_send, it is disabled by default.
+
+	Added more code to handle nonlinear skb in sending socket data.
+
+	Thank Julian for many discussions on this issue.
+
+2002-05-05  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_http.c (parse_http_header): was changed to parse more
+	METHODS, such as GET/HEAD/PUT/POST.
+
+	* redirect.c : was added with a function of redirecting request to
+	local socket, most code was taken from TUX.
+
+	* tcp_vs.c (tcp_vs_conn_handle): was changed to redirect the
+	request to the specified local socket when no destination server
+	is found.
+
+	* userspace/tcpvs_config.c: was changed to parse the "redirect"
+	option from a config file.
+
+	* userspace/tcpvsadm.c (print_service): was changed to print the
+	"redirect" option.
+
+2002-05-01  Wensong Zhang  <wensong@linux-vs.org>
+
+	* regex/kernel.c (realloc): fixed the memmove bug in the
+	realloc(). We should check whehter the new size is smaller than
+	the old size, because it is possible that new size is smaller. The
+	correct memmove call should be "memmove(new, old, min(new_size,
+	old_size), otherwise the memmove will override some data, which
+	would lead to some abnormal behavior.
+
+	* regex/kernel.h (assert): added a preprocesor macro of assert.
+
+	* userspace/tcpvsadm.c (main): fixed up the bug of deleting a real
+	server.
+
+2002-04-30  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_ctl.c (__tcp_vs_del_service): remove the rules first.
+
+	* tcp_vs_ctl.c (tcp_vs_del_dest): return busy if it is referenced
+	by a rule.
+
+	* tcp_vs_ctl.c (tcp_vs_add_service): added checking of the result
+	of tcp_vs_bind_scheduler().
+
+
+Kernel TCP Virtual Server - Version 0.0.7 - April 20, 2002
+
+2002-04-20  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs.c (tcp_vs_relay_socket): Added to implement zero-copying
+	in receiving and sending data from one socket to the
+	other. Although I don't benchmark the performance, I think it
+	should greatly improve the performance. :)
+
+	* userspace/tcpvsadm.8: added the description about the matching
+	pattern in regular expression.
+
+
+Kernel TCP Virtual Server - Version 0.0.6 - April 12, 2002
+
+2002-04-12  Wensong Zhang  <wensong@linux-vs.org>
+
+	* Ported Henry Spencer's regular expression library into the
+	kernel. It is used to replace the original simple expression in
+	rule matching of KTCPVS. So, users can now specify flexible rules
+	in content-base scheduling.
+
+	* tcp_vs_ctl.c (tcp_vs_add_rule): was changed to use regcomp to
+	compile pattern in the rule. The pattern ".*" or "^/.*" is used to
+	specify the default server. When no other server is matched, this
+	default server will be used.
+
+	* tcp_vs_http.c (tcp_vs_http_matchrule): was changed to use
+	regexec to match content against the precompiled pattern.
+
+	* userspace/tcpvs_config.c (get_next_token): was modified to parse
+	quoted string as a token.
+
+	* userspace/tcpvsadm.c (print_service): was changed to print
+	quoted pattern.
+
+
+2002-03-16  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_ctl.c (tcp_vs_flush_rule): removed unnecessary write
+	lock, otherwise it would hang up on SMP system.
+
+
+Kernel TCP Virtual Server - Version 0.0.5 - December 21, 2001
+
+2001-12-21  Wensong Zhang  <wensong@linux-vs.org>
+
+	* tcp_vs_ctl.c: Added the rule of pattern "*" or "/*" at the tail
+	of the rule list, so that the associated server can be used as the
+	default server. When no other rules are matched, this rule will be
+	matched finally.
+
+	* Add a simple tcpvsadm man page
+
+	* Some code tidy up.
+
+2001-12-20  Wensong Zhang  <wensong@linux-vs.org>
+
+	* Change --start|--stop command. Start/Stop all the services in the
+	TCP virtual server table if no argument is specified.
+
+	* Add the --load-configfile command, which is to load the TCP
+	virtual server table from the config file.
+
+2001-11-14  Wensong Zhang  <wensong@linux-vs.org>
+
+	* Split various conversion and parsing function from tcpvsadm.c to
+	helper.c.
+
+	* Create the tcpvs_config.h and tcpvs_config.c, which can parse
+	very basic tcpvs configuration file.
+
+2001-10-29  Wensong Zhang  <wensong@linux-vs.org>
+
+	* Add the macro TCP_VS_ERR_RL that calls net_ratelimit() to limit
+	error information.
+
+
+Kernel TCP Virtual Server - Version 0.0.4 - October 16, 2001
+
+2001-10-16  Wensong Zhang  <wensong@gnuchina.org>
+
+	* Revisited the locking facility of TCPVS service list access and
+	service member access (such as the destination list and the rule
+	list).
+
+	* tcp_vs.c: use net_ratelimit() to guard TCP_VS_ERR outputs in the
+	connection processing.
+
+2001-10-15  Wensong Zhang  <wensong@gnuchina.org>
+
+	* Added the function of server pool maintenance, which is to
+	dynamically keep enough server thread to handle the current load.
+
+	It does this by periodically check the number of spare servers
+	(waiting for a request). If there are fewer than MinSpareServers,
+	it creates more spare servers. If there are more than
+	MaxSpareServers, some of the spares die off.
+
+	* tcpvsadm updates
+
+	Output more TCPVS config information.
+
+	Change some default values of TCPVS config.
+
+
+Kernel TCP Virtual Server - Version 0.0.3 - October 11, 2001
+
+2001-10-10  Wensong Zhang  <wensong@gnuchina.org>
+
+	* Changed to use [gs]etsockopt to manipulate TCPVS inside the
+	kernel (through netfilter sockopt register), so that it is
+	possible to merge IPVS and TCPVS code together in the future.
+
+	* Code tide up, such as removing the code of reading and writing
+	proc files, and adding/refining data structures.
+
+	* tcpvsadm is updated to a new version.
+
+	Added the libtcpvs library to manipulate TCPVS.
+
+	Rewrote most code of tcpvsadm.c to use libtcpvs to interact with
+	TCPVS inside the kernel.
+
+2001-09-22  Wensong Zhang  <wensong@gnuchina.org>
+
+	* tcp_vs_sched.c: add the including of head file <linux/interrupt>
+	to avoid the compiling error that `do_softirq' is undeclared.
+
+	* tcp_vs_http.c (parse_http_header):  add type into min marco
+	call, so that it can be compiled in kernel 2.4.9.
+
+2001-05-18  Wensong Zhang  <wensong@gnuchina.org>
+
+	* replace sched->refcnt with sched->module use count for tcpvs
+	scheduler references.
+
+
+Kernel TCP Virtual Server - Version 0.0.2 - May 17, 2001
+
+2001-05-17  Wensong Zhang  <wensong@gnuchina.org>
+
+	* make the tcp_vs_conn_handle function work more correctly.
+
+	* add new debug-level facility
+
+	* rewrite a lot code of tcp_vs_ctl.c and tcpvsadm.c, so that most
+	ktcpvs configuration is done by the tcpvsadm utility. and, add the
+	add-rule/del-rule of content-based scheduling rule.
+
+	* rewrite most code of the tcp_vs_http.c
+
+	* Although the code is still ugly, it is a little bit better than
+	the last release. :)
+
+
+Kernel TCP Virtual Server - Version 0.0.1 - May 8, 2001
+
+	* initial release. It is very very draft version, it is just used
+	to prove the concept that application-level load balancing can
+	work inside the kernel.

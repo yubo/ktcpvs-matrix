@@ -1,0 +1,6 @@
+.svn/
+*.a
+*.so
+*.ko
+*.o
+cscope.*
